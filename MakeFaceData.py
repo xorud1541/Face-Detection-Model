@@ -23,6 +23,8 @@ for root, dirs, files in os.walk(images_dir):
                 roi = image_array[y:y+h, x:x+w]
 
             final_image = Image.fromarray(roi)
+            newsize = (96, 96)
+            final_image = final_image.resize(newsize)
             image_name = "images/%d.jpg" % count
             final_image.save(image_name)
 print('end')
