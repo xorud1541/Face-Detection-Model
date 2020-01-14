@@ -9,6 +9,10 @@ images_dir = os.path.join(base_dir, "temp")
 
 face_cascade = cv2.CascadeClassifier('./OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
 count = 0
+
+if not(os.path.isdir('images')):
+    os.makedirs(os.path.join('images'))
+
 for root, dirs, files in os.walk(images_dir):
     for file in files:
         if file.endswith("png") or file.endswith("jpg"):
