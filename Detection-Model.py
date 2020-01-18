@@ -12,7 +12,7 @@ data_dir = 'dataset'
 data_dir = pathlib.Path(data_dir)
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
-BATCH_SIZE = 5
+BATCH_SIZE = 10
 VAL_COUNT = 10
 CLASS_NAMES = np.array([item.name for item in data_dir.glob("*")])
 
@@ -72,6 +72,11 @@ model.fit(train_ds, epochs=20, steps_per_epoch=steps_per_epoch)
 test_ds = train_ds.take(100)
 test_loss, test_acc = model.evaluate(test_ds)
 print(test_acc)
+
+for image, label in train_ds.take(1):
+    pred = model.predict(image)
+    print(np.argmax(pred[0]))
+    print(label[0])
 
 
 
