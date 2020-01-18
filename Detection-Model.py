@@ -81,7 +81,7 @@ steps_per_epoch = TRAIN_COUT / BATCH_SIZE
 steps_per_validation = TEST_COUT / BATCH_SIZE
 model.fit(train_ds, epochs=20, steps_per_epoch=steps_per_epoch, validation_data=test_ds, validation_steps=steps_per_validation)
 
-evaluate_ds = train_ds.take(100)
+evaluate_ds = test_ds.take(100)
 test_loss, test_acc = model.evaluate(evaluate_ds)
 print(test_acc)
 
