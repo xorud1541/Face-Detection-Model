@@ -2,10 +2,11 @@ import cv2
 import numpy as np
 import os
 from PIL import Image
-import scipy.misc
+import sys
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-images_dir = os.path.join(base_dir, "temp")
+images_dir = sys.argv[1]
+IMAGE_WIDTH = 96
+IMAGE_HEIGHT = 96
 
 face_cascade = cv2.CascadeClassifier('./OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
 count = 0
@@ -27,8 +28,9 @@ for root, dirs, files in os.walk(images_dir):
                 roi = image_array[y:y+h, x:x+w]
 
             final_image = Image.fromarray(roi)
-            newsize = (96, 96)
+            newsize = (IMAGE_WIDTH, IMAGE_HEIGHT)
             final_image = final_image.resize(newsize)
             image_name = "images/%d.jpg" % count
             final_image.save(image_name)
+            print(image_name)
 print('end')
