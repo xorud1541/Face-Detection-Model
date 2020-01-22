@@ -23,3 +23,5 @@
 ## Detection-Model
 
 ### 용어 정리
+
+- batch란?
