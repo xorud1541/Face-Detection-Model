@@ -10,12 +10,16 @@
 	$ pip install icrawler
 	$ python Google-images-Crawler.py "keyword" 1000
 	</code></pre>
-	
+
 ## MakeFaceData 사용법
 - 실행인자
 	- inputdir : 얼굴 영역을 추출할 이미지들
-	
+
 - 예시
 	<pre><code>
 	$ python MakeFaceData.py inputdir
 	</code></pre>
+
+## Detection-Model
+
+### 용어 정리
