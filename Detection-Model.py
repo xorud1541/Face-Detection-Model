@@ -39,7 +39,7 @@ def process_path(file_path):
     return img, label
 
 def prepare_for_training(ds, cache=True, shuffle_buffer_size=5):
-    ds = ds.shuffle(buffer_size=shuffle_buffer_size)
+    ds = ds.shuffle(buffer_size=100)
 
     # Repeat forever
     ds = ds.repeat()

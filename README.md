@@ -38,12 +38,67 @@
 	- Q2. 얼마나 높아야 높은 성능인가?
 		+ 95 ~ 99%
 
-* test란?
-* label이란?
-* model이란?
 * epoch이란?
+전체 훈련데이터를 이용하여 한 번 돌며 학습하는 것을 epoch이라고 한다.
+
 * step이란?
+weight와 bias를 1회 업데이트하는 것을 step 이라고 한다.
 
 ### Tensorflow 2.0 사용한 문법 정리
+
+* tf.data.dataset
+tf.data.datast API는 효율적으로 입력 파이프라인을 지원한다. 또한, 스트리밍 형식으로 데이터를 입력할 수 있기에 메모리에 딱 맞지 않아도 된다.
+	- tf.data.dataset.list_files
+		<pre><code>
+		@staticmethod
+		list_files(
+			file_pattern,
+			shuffle=None,
+			seed=Node
+		)
+		</code></pre>
+
+		glob 패턴과 일치하는 모든 파일들을 모은다.
+
+		Returns:
+		+ dataset: 파일이름들에 대응하는 문자열 dataset을 반환한다.
+
+		+ example
+		<pre><code>
+		// data_dir에 해당하는 모든 파일들을 데이터세트로 묶는다.
+		train_list_ds = tf.dats.Dataset.list_files(str(data_dir/'*/*'))
+		</code></pre>
+
+	- tf.data.dataset.map
+		<pre><code>
+		map(
+			map_func,
+			num_parallel_calls=None
+			)
+		</code></pre>
+
+		dataset들의 각각의 요소들이 map_func 함수를 통해서 전처리 작업을 할 수 있다.
+		그리고 변형된 각가의 요소들이 새로운 dataset으로 반환되어진다.
+
+		num_parallel_calls?
+		병렬처리의 개수를 지정할 수 있다.
+		num_parallel_calls = tf.data.experimental.AUTOTUNE 이라 설정하면 이용가능한 CPU에 맞게 동적으로 지정 가능하다.
+
+  - tf.data.dataset.shuffle
+		<pre><code>
+		shuffle(
+			buffer_size,
+			seed=None,
+			reshuffle_each_iteration=None
+			)
+		</code></pre>
+
+		dataset에 data들을 랜덤하게 섞는다.
+		buffer_size 만큼의 data들을 섞는다.
+
+	- tf.data.dataset.repeat
+	- tf.data.dataset.batch
+	- tf.data.dataset.prefetch
+
 ### 사용한 딥러닝 개념정리
 ### 딥러닝 모델 설명
