@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from glob import glob
 from tensorflow.keras import datasets, layers, models
+from tensorflow.keras.layers import Flatten
 
 root_dir = 'dataset'
 data_dir = 'dataset/train'
@@ -48,6 +49,20 @@ def prepare_for_training(ds, cache=True, shuffle_buffer_size=5):
 
     return ds
 
+def show_image(image, pred):
+    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
+    axes = axes.flatten()
+    index = 0
+    for img, ax in zip(image, axes):
+        img = img.numpy().squeeze()
+        ax.imshow(img)
+        #plt.text(30, 30, 'test')
+        print(np.argmax(pred[index]))
+        ax.axis('off')
+        index = index + 1
+    plt.tight_layout()
+    plt.show()
+
 train_list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'))
 test_list_ds = tf.data.Dataset.list_files(str(test_dir/'*/*'))
 
@@ -85,23 +100,11 @@ evaluate_ds = test_ds.take(100)
 test_loss, test_acc = model.evaluate(evaluate_ds)
 print(test_acc)
 
-"""
-image, label = next(iter(train_ds))
-pred = model.predict(image)
-print(np.argmax(pred[0]))
-print(label[0])
 
-image = image.numpy()
-label = label.numpy()
-plt.figure(figsize=(10, 10))
-for n in range(10):
-    ax = plt.subplot(5, 5, n+1)
-    img = tf.reshape(image[n], [96, 96])
-    plt.imshow(img)
-    plt.title(CLASS_NAMES[label[n] == 1][0].title())
-    plt.axis('off')
-    plt.show()
-"""
+image, label = next(iter(test_ds))
+pred = model.predict(image)
+show_image(image[:5], pred[:5])
+
 
 
 
