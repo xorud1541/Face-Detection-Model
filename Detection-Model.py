@@ -94,15 +94,21 @@ model.compile(optimizer=tf.optimizers.Adam(),
 
 steps_per_epoch = TRAIN_COUT / BATCH_SIZE
 steps_per_validation = TEST_COUT / BATCH_SIZE
-model.fit(train_ds, epochs=20, steps_per_epoch=steps_per_epoch, validation_data=test_ds, validation_steps=steps_per_validation)
+model.fit(train_ds, epochs=30, steps_per_epoch=steps_per_epoch, validation_data=test_ds, validation_steps=steps_per_validation)
 
-evaluate_ds = test_ds.take(100)
-test_loss, test_acc = model.evaluate(evaluate_ds)
+path_save = './dataset/model'
+model.save(path_save)
+
+print('model has saved ... ')
+restored_model = tf.keras.models.load_model(path_save)
+print('model has loaded ... ')
+
+evaluate_ds = test_ds.shuffle(130).take(100)
+test_loss, test_acc = restored_model.evaluate(evaluate_ds)
 print(test_acc)
 
-
 image, label = next(iter(test_ds))
-pred = model.predict(image)
+pred = restored_model.predict(image)
 show_image(image[:5], pred[:5])
 
 
