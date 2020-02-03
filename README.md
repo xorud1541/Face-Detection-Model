@@ -102,3 +102,4 @@ tf.data.datast API는 효율적으로 입력 파이프라인을 지원한다. �
 
 ### 사용한 딥러닝 개념정리
 ### 딥러닝 모델 설명
+### Tensorflow Model And C++
