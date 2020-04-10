@@ -21,6 +21,7 @@ class ImageView(QMainWindow):
         super().__init__()
         self.setGeometry(100, 200, self.windowWidth, self.windowHeight)
         self.setWindowTitle("ImageViewer")
+        self.setMouseTracking(True)
 
         leftBtn = QPushButton("left", self)
         leftBtn.setGeometry(170, 550, 100, 30)
@@ -90,6 +91,21 @@ class ImageView(QMainWindow):
         faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
 
         return faceRect
+
+    def mouseMoveEvent(self, event):
+        posx = event.x()
+        posy = event.y()
+
+        faceRects = self.imageInfoList[self.currentIndex]['faceRects']
+
+        for (x1, y1, w, h) in faceRects:
+            x2 = x1 + w
+            y2 = y1 + h
+
+            if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
+                print('in')
+                break
+
 
 app = QApplication(sys.argv)
 window = ImageView()
