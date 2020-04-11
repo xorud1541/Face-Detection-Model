@@ -16,10 +16,9 @@ class ImageView(QMainWindow):
     imageList = []
     dirName = 'Model/dataset/image'
     imageLabel = QLabel
+
     def __init__(self):
         super().__init__()
-        self.drawing = False
-        self.lastPoint = QPoint()
         self.setGeometry(100, 200, self.windowWidth, self.windowHeight)
         self.setWindowTitle("ImageViewer")
 
