@@ -13,7 +13,7 @@ class ImageView(QMainWindow):
     listSize = 0
     windowWidth = 530
     windowHeight = 600
-    imageList = []
+    imageInfoList = []
     dirName = 'Model/dataset/image'
     imageLabel = QLabel
 
@@ -33,18 +33,21 @@ class ImageView(QMainWindow):
         fileNames = os.listdir(self.dirName)
         self.listSize = len(fileNames)
         for fileName in fileNames:
+            imageInfo = {'image' : None, 'faceRects' : None}
             full_fileName = os.path.join(self.dirName, fileName)
             image = QPixmap(full_fileName)
-
             image = image.scaled(512, 512, Qt.KeepAspectRatio)
-            self.imageList.append(image)
+            imageInfo['image'] = image
 
-        for image in self.imageList:
-            faceRect = self.getFaceRectangle(image)
-            image = self.drawRectangle(faceRect, image)
+            self.imageInfoList.append(imageInfo)
+
+        for imageInfo in self.imageInfoList:
+            faceRect = self.getFaceRectangle(imageInfo['image'])
+            imageInfo['faceRects'] = faceRect
+            self.drawRectangle(imageInfo['faceRects'], imageInfo['image'])
 
         self.imageLabel = QLabel(self)
-        pixmap = self.imageList[self.currentIndex]
+        pixmap = self.imageInfoList[self.currentIndex]['image']
         self.imageLabel.setPixmap(pixmap)
         x = (self.windowWidth - pixmap.width()) / 2
         self.imageLabel.setGeometry(x, 10, 512, 512)
@@ -52,7 +55,7 @@ class ImageView(QMainWindow):
     def onClickedLeftBtn(self):
         if self.currentIndex != 0:
             self.currentIndex = self.currentIndex - 1
-            pixmap = self.imageList[self.currentIndex]
+            pixmap = self.imageInfoList[self.currentIndex]['image']
             self.imageLabel.setPixmap(pixmap)
             x = (self.windowWidth - pixmap.width()) / 2
             self.imageLabel.setGeometry(x, 10, 512, 512)
@@ -60,7 +63,7 @@ class ImageView(QMainWindow):
     def onClickedRightBtn(self):
         if self.currentIndex < self.listSize - 1:
             self.currentIndex = self.currentIndex + 1
-            pixmap = self.imageList[self.currentIndex]
+            pixmap = self.imageInfoList[self.currentIndex]['image']
             self.imageLabel.setPixmap(pixmap)
             x = (self.windowWidth - pixmap.width()) / 2
             self.imageLabel.setGeometry(x, 10, 512, 512)
