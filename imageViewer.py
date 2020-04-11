@@ -38,14 +38,14 @@ class ImageView(QMainWindow):
             image = QPixmap(full_fileName)
 
             image = image.scaled(512, 512, Qt.KeepAspectRatio)
-            print(image.width())
             self.imageList.append(image)
 
+        for image in self.imageList:
+            faceRect = self.getFaceRectangle(image)
+            image = self.drawRectangle(faceRect, image)
 
         self.imageLabel = QLabel(self)
         pixmap = self.imageList[self.currentIndex]
-        faceRect = self.getFaceRectangle(pixmap)
-        self.drawRectangle(faceRect, pixmap)
         self.imageLabel.setPixmap(pixmap)
         x = (self.windowWidth - pixmap.width()) / 2
         self.imageLabel.setGeometry(x, 10, 512, 512)
@@ -54,8 +54,6 @@ class ImageView(QMainWindow):
         if self.currentIndex != 0:
             self.currentIndex = self.currentIndex - 1
             pixmap = self.imageList[self.currentIndex]
-            faceRect = self.getFaceRectangle(pixmap)
-            self.drawRectangle(faceRect, pixmap)
             self.imageLabel.setPixmap(pixmap)
             x = (self.windowWidth - pixmap.width()) / 2
             self.imageLabel.setGeometry(x, 10, 512, 512)
@@ -64,17 +62,16 @@ class ImageView(QMainWindow):
         if self.currentIndex < self.listSize - 1:
             self.currentIndex = self.currentIndex + 1
             pixmap = self.imageList[self.currentIndex]
-            faceRect = self.getFaceRectangle(pixmap)
-            self.drawRectangle(faceRect, pixmap)
             self.imageLabel.setPixmap(pixmap)
             x = (self.windowWidth - pixmap.width()) / 2
             self.imageLabel.setGeometry(x, 10, 512, 512)
 
     def drawRectangle(self, faceRects, pixmap):
+        self.painterInstance = QPainter(pixmap)
+        self.painterInstance.setPen(QColor(255, 0, 0))
+
         for (x, y, width, height) in faceRects:
-            self.painterInstance = QPainter(pixmap)
-            self.painterInstance.setPen(QColor(255, 0, 0))
-            self.painterInstance.drawRect(x, y, width,height)
+            self.painterInstance.drawRect(x, y, width, height)
 
         return pixmap
 
@@ -87,7 +84,7 @@ class ImageView(QMainWindow):
 
         ptr = img.bits()
         ptr.setsize(img.byteCount())
-        arr = np.array(ptr).reshape(height, width, 4)  # Copies the data
+        arr = np.array(ptr).reshape(height, width, 4)
         faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
 
         return faceRect
