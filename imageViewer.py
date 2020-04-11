@@ -1,10 +1,13 @@
 import sys
 import os
+import cv2
+import numpy as np
 from PIL import Image
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen, QImage
 
+face_cascade = cv2.CascadeClassifier('./Model/OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
 class ImageView(QMainWindow):
     currentIndex = 0
     listSize = 0
@@ -38,6 +41,7 @@ class ImageView(QMainWindow):
 
         self.imageLabel = QLabel(self)
         pixmap = self.imageList[self.currentIndex]
+
         self.imageLabel.setPixmap(pixmap)
         self.imageLabel.setGeometry(10, 10, 512, 512)
 
@@ -45,6 +49,7 @@ class ImageView(QMainWindow):
         if self.currentIndex != 0:
             self.currentIndex = self.currentIndex - 1
             pixmap = self.imageList[self.currentIndex]
+
             self.imageLabel.setPixmap(pixmap)
             self.imageLabel.setGeometry(10, 10, 512, 512)
 
@@ -52,10 +57,23 @@ class ImageView(QMainWindow):
         if self.currentIndex < self.listSize - 1:
             self.currentIndex = self.currentIndex + 1
             pixmap = self.imageList[self.currentIndex]
+
             self.imageLabel.setPixmap(pixmap)
             self.imageLabel.setGeometry(10, 10, 512, 512)
 
+    def getFaceRectangle(self, pixmap):
+        img = pixmap.toImage()
+        img = img.convertToFormat(4)
 
+        width = img.width()
+        height = img.height()
+
+        ptr = img.bits()
+        ptr.setsize(img.byteCount())
+        arr = np.array(ptr).reshape(height, width, 4)  # Copies the data
+        faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
+
+        return faceRect
 
 app = QApplication(sys.argv)
 window = ImageView()
