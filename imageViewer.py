@@ -1,16 +1,20 @@
 import sys
 import os
 from PIL import Image
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen
 
 class ImageView(QMainWindow):
     currentIndex = 0
+    listSize = 0
     imageList = []
-    dirName = 'dataset/image'
+    dirName = 'Model/dataset/image'
     imageLabel = QLabel
     def __init__(self):
         super().__init__()
+        self.drawing = False
+        self.lastPoint = QPoint()
         self.setGeometry(100, 200, 530, 600)
         self.setWindowTitle("ImageViewer")
 
@@ -23,6 +27,7 @@ class ImageView(QMainWindow):
         rigthBtn.clicked.connect(self.onClickedRightBtn)
 
         fileNames = os.listdir(self.dirName)
+        self.listSize = len(fileNames)
         for fileName in fileNames:
             full_fileName = os.path.join(self.dirName, fileName)
             image = QPixmap(full_fileName)
@@ -37,16 +42,18 @@ class ImageView(QMainWindow):
         self.imageLabel.setGeometry(10, 10, 512, 512)
 
     def onClickedLeftBtn(self):
-        self.currentIndex = self.currentIndex - 1
-        pixmap = self.imageList[self.currentIndex]
-        self.imageLabel.setPixmap(pixmap)
-        self.imageLabel.setGeometry(10, 10, 512, 512)
+        if self.currentIndex != 0:
+            self.currentIndex = self.currentIndex - 1
+            pixmap = self.imageList[self.currentIndex]
+            self.imageLabel.setPixmap(pixmap)
+            self.imageLabel.setGeometry(10, 10, 512, 512)
 
     def onClickedRightBtn(self):
-        self.currentIndex = self.currentIndex + 1
-        pixmap = self.imageList[self.currentIndex]
-        self.imageLabel.setPixmap(pixmap)
-        self.imageLabel.setGeometry(10, 10, 512, 512)
+        if self.currentIndex < self.listSize - 1:
+            self.currentIndex = self.currentIndex + 1
+            pixmap = self.imageList[self.currentIndex]
+            self.imageLabel.setPixmap(pixmap)
+            self.imageLabel.setGeometry(10, 10, 512, 512)
 
 
 
