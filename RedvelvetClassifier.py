@@ -10,18 +10,20 @@ def decode_img(img):
     img = tf.image.convert_image_dtype(img, tf.float32)
     return img
 
-class RedvelvetClassifier:
+class Classifier:
     modelPath = ''
     saved_model = 0
     def __init__(self):
-        self.modelPath = './dataset/model' #학습된 모델 경로
+        self.modelPath = './Model/dataset/model' #학습된 모델 경로
 
     def loadModel(self):
+        print('model has loaded...')
         self.saved_model = tf.keras.models.load_model(self.modelPath)
 
     def predictImage(self, image):
+        print('1')
         image = decode_img(image)
-        predict_one_hot_array = saved_model.predict(image)
+        predict_one_hot_array = self.saved_model.predict(image)
         predict_label = np.argmax(predict_one_hot_array)
 
         if predict_label == 0:
@@ -42,7 +44,8 @@ class RedvelvetClassifier:
             print('incorrect!')
 
 """
-input_path = sys.argv[1]
+#input_path = sys.argv[1]
+input_path = 'Model\\dataset\\test\\irene\\1.jpg'
 print('input path:', input_path)
 
 image = tf.io.read_file(input_path)
@@ -50,7 +53,7 @@ image = decode_img(image)
 
 label = input_path.split('\\')[-2]
 print('label', label)
-model_pb_dir = './dataset/model' #학습된 모델 경로
+model_pb_dir = './Model/dataset/model' #학습된 모델 경로
 
 print('model has loaded...')
 

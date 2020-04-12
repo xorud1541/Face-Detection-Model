@@ -6,11 +6,10 @@ from PIL import Image
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen, QImage, QColor
-from Model import RedvelvetClassifier
+import RedvelvetClassifier as Classifier
 
 face_cascade = cv2.CascadeClassifier('./Model/OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
-model = RedvelvetClassifier.RedvelvetClassifier()
-
+model = Classifier.Classifier()
 class ImageView(QMainWindow):
     currentIndex = 0
     listSize = 0
@@ -25,6 +24,7 @@ class ImageView(QMainWindow):
         self.setGeometry(100, 200, self.windowWidth, self.windowHeight)
         self.setWindowTitle("ImageViewer")
         self.setMouseTracking(True)
+        model.loadModel()
 
         leftBtn = QPushButton("left", self)
         leftBtn.setGeometry(170, 550, 100, 30)
@@ -95,6 +95,24 @@ class ImageView(QMainWindow):
         faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
 
         return faceRect
+
+    def mousePressEvent(self, event):
+        posx = event.x()
+        posy = event.y()
+        faceRects = self.imageInfoList[self.currentIndex]['faceRects']
+
+        for (x1, y1, w, h) in faceRects:
+            if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
+                inputImage = self.imageInfoList[self.currentIndex]['origin'].copy(x1, y1, w, h)
+                img = inputImage.toImage()
+                width = img.width()
+                height = img.height()
+
+                ptr = img.bits()
+                ptr.setsize(img.byteCount())
+                arr = np.array(ptr).reshape(height, width, 4)
+                model.predictImage(arr)
+                break
 
     def mouseMoveEvent(self, event):
         posx = event.x()
