@@ -34,18 +34,18 @@ class ImageView(QMainWindow):
         fileNames = os.listdir(self.dirName)
         self.listSize = len(fileNames)
         for fileName in fileNames:
-            imageInfo = {'image' : None, 'faceRects' : None}
+            imageInfo = {'origin' : None, 'image' : None, 'faceRects' : None}
             full_fileName = os.path.join(self.dirName, fileName)
             image = QPixmap(full_fileName)
             image = image.scaled(512, 512, Qt.KeepAspectRatio)
-            imageInfo['image'] = image
+            imageInfo['origin'] = image
 
             self.imageInfoList.append(imageInfo)
 
         for imageInfo in self.imageInfoList:
-            faceRect = self.getFaceRectangle(imageInfo['image'])
+            faceRect = self.getFaceRectangle(imageInfo['origin'])
             imageInfo['faceRects'] = faceRect
-            self.drawRectangle(imageInfo['faceRects'], imageInfo['image'])
+            imageInfo['image'] = self.drawRectangle(imageInfo['faceRects'], imageInfo['origin'])
 
         self.imageLabel = QLabel(self)
         pixmap = self.imageInfoList[self.currentIndex]['image']
@@ -70,13 +70,14 @@ class ImageView(QMainWindow):
             self.imageLabel.setGeometry(x, 10, 512, 512)
 
     def drawRectangle(self, faceRects, pixmap):
-        self.painterInstance = QPainter(pixmap)
+        pix = pixmap.copy()
+        self.painterInstance = QPainter(pix)
         self.painterInstance.setPen(QColor(255, 0, 0))
 
         for (x, y, width, height) in faceRects:
             self.painterInstance.drawRect(x, y, width, height)
 
-        return pixmap
+        return pix
 
     def getFaceRectangle(self, pixmap):
         img = pixmap.toImage()
