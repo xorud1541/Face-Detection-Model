@@ -20,9 +20,10 @@ class Classifier:
         print('model has loaded...')
         self.saved_model = tf.keras.models.load_model(self.modelPath)
 
-    def predictImage(self, image):
-        print('1')
-        image = decode_img(image)
+    def predictImage(self, array):
+        image = tf.convert_to_tensor(array / 255)
+        image = tf.image.convert_image_dtype(image, tf.float32)
+        image = np.reshape(image, ((1,) + image.shape))
         predict_one_hot_array = self.saved_model.predict(image)
         predict_label = np.argmax(predict_one_hot_array)
 
@@ -38,10 +39,6 @@ class Classifier:
             predict_label = 'yeri'
 
         print('predict: ', predict_label)
-        if predict_label == label:
-            print('correct!')
-        else:
-            print('incorrect!')
 
 """
 #input_path = sys.argv[1]

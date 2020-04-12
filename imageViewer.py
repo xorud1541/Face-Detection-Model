@@ -99,25 +99,10 @@ class ImageView(QMainWindow):
     def mousePressEvent(self, event):
         posx = event.x()
         posy = event.y()
-        faceRects = self.imageInfoList[self.currentIndex]['faceRects']
-
-        for (x1, y1, w, h) in faceRects:
-            if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
-                inputImage = self.imageInfoList[self.currentIndex]['origin'].copy(x1, y1, w, h)
-                img = inputImage.toImage()
-                width = img.width()
-                height = img.height()
-
-                ptr = img.bits()
-                ptr.setsize(img.byteCount())
-                arr = np.array(ptr).reshape(height, width, 4)
-                model.predictImage(arr)
-                break
-
-    def mouseMoveEvent(self, event):
-        posx = event.x()
-        posy = event.y()
-
+        pixmap = self.imageInfoList[self.currentIndex]['image']
+        x = (self.windowWidth - pixmap.width()) / 2
+        posx = posx - x
+        posy = posy - 10
         faceRects = self.imageInfoList[self.currentIndex]['faceRects']
 
         for (x1, y1, w, h) in faceRects:
@@ -125,7 +110,17 @@ class ImageView(QMainWindow):
             y2 = y1 + h
 
             if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
-                print('in')
+                inputImage = self.imageInfoList[self.currentIndex]['origin'].copy(x1, y1, w, h)
+                inputImage = inputImage.scaled(96, 96)
+                img = inputImage.toImage()
+                img = img.convertToFormat(QImage.Format_Grayscale8)
+                width = img.width()
+                height = img.height()
+
+                ptr = img.bits()
+                ptr.setsize(img.byteCount())
+                arr = np.array(ptr).reshape(height, width, 1)
+                model.predictImage(arr)
                 break
 
 
