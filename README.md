@@ -1,5 +1,9 @@
 # Face-Detection-Model
 
+## Todo
+- 마우스 위치 좌표계랑 사진 좌표계랑 일치하지 않은 점
+- 모델 재학습
+
 ## Google-images-Crawler 사용법
 - 실행인자
 	- keyword : 크롤링할 검색어
