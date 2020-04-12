@@ -6,8 +6,11 @@ from PIL import Image
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen, QImage, QColor
+from Model import RedvelvetClassifier
 
 face_cascade = cv2.CascadeClassifier('./Model/OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
+model = RedvelvetClassifier.RedvelvetClassifier()
+
 class ImageView(QMainWindow):
     currentIndex = 0
     listSize = 0
