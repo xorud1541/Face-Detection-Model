@@ -10,6 +10,41 @@ import RedvelvetClassifier as Classifier
 
 face_cascade = cv2.CascadeClassifier('./Model/OpenCV-Python-Series/src/cascades/data/haarcascade_frontalface_default.xml')
 model = Classifier.Classifier()
+
+class ImageLabel(QLabel):
+
+    def __init__(self, wigdet):
+        super().__init__(wigdet)
+
+    def setCurrentImageInfo(self, imageInfo):
+        super(ImageLabel, self).setPixmap(imageInfo['image'])
+        self.currentImageInfo = imageInfo
+
+    def mousePressEvent(self, event):
+        posx = event.x()
+        posy = event.y()
+
+        faceRects = self.currentImageInfo['faceRects']
+
+        for (x1, y1, w, h) in faceRects:
+            x2 = x1 + w
+            y2 = y1 + h
+
+            if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
+                print('in')
+                inputImage = self.currentImageInfo['origin'].copy(x1, y1, w, h)
+                inputImage = inputImage.scaled(96, 96)
+                img = inputImage.toImage()
+                img = img.convertToFormat(QImage.Format_Grayscale8)
+                width = img.width()
+                height = img.height()
+
+                ptr = img.bits()
+                ptr.setsize(img.byteCount())
+                arr = np.array(ptr).reshape(height, width, 1)
+                model.predictImage(arr)
+                break
+
 class ImageView(QMainWindow):
     currentIndex = 0
     listSize = 0
@@ -17,7 +52,6 @@ class ImageView(QMainWindow):
     windowHeight = 600
     imageInfoList = []
     dirName = 'Model/dataset/image'
-    imageLabel = QLabel
 
     def __init__(self):
         super().__init__()
@@ -50,27 +84,33 @@ class ImageView(QMainWindow):
             imageInfo['faceRects'] = faceRect
             imageInfo['image'] = self.drawRectangle(imageInfo['faceRects'], imageInfo['origin'])
 
-        self.imageLabel = QLabel(self)
-        pixmap = self.imageInfoList[self.currentIndex]['image']
-        self.imageLabel.setPixmap(pixmap)
+        self.imageLabel = ImageLabel(self)
+        currentImageInfo = self.imageInfoList[self.currentIndex]
+        self.imageLabel.setCurrentImageInfo(currentImageInfo)
+
+        pixmap = currentImageInfo['image']
         x = (self.windowWidth - pixmap.width()) / 2
-        self.imageLabel.setGeometry(x, 10, 512, 512)
+        self.imageLabel.setGeometry(x, 10, pixmap.width(), pixmap.height())
 
     def onClickedLeftBtn(self):
         if self.currentIndex != 0:
             self.currentIndex = self.currentIndex - 1
-            pixmap = self.imageInfoList[self.currentIndex]['image']
-            self.imageLabel.setPixmap(pixmap)
+            currentImageInfo = self.imageInfoList[self.currentIndex]
+            self.imageLabel.setCurrentImageInfo(currentImageInfo)
+
+            pixmap = currentImageInfo['image']
             x = (self.windowWidth - pixmap.width()) / 2
-            self.imageLabel.setGeometry(x, 10, 512, 512)
+            self.imageLabel.setGeometry(x, 10, pixmap.width(), pixmap.height())
 
     def onClickedRightBtn(self):
         if self.currentIndex < self.listSize - 1:
             self.currentIndex = self.currentIndex + 1
-            pixmap = self.imageInfoList[self.currentIndex]['image']
-            self.imageLabel.setPixmap(pixmap)
+            currentImageInfo = self.imageInfoList[self.currentIndex]
+            self.imageLabel.setCurrentImageInfo(currentImageInfo)
+
+            pixmap = currentImageInfo['image']
             x = (self.windowWidth - pixmap.width()) / 2
-            self.imageLabel.setGeometry(x, 10, 512, 512)
+            self.imageLabel.setGeometry(x, 10, pixmap.width(), pixmap.height())
 
     def drawRectangle(self, faceRects, pixmap):
         pix = pixmap.copy()
@@ -95,34 +135,6 @@ class ImageView(QMainWindow):
         faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
 
         return faceRect
-
-    def mousePressEvent(self, event):
-        posx = event.x()
-        posy = event.y()
-        pixmap = self.imageInfoList[self.currentIndex]['image']
-        x = (self.windowWidth - pixmap.width()) / 2
-        posx = posx - x
-        posy = posy - 10
-        faceRects = self.imageInfoList[self.currentIndex]['faceRects']
-
-        for (x1, y1, w, h) in faceRects:
-            x2 = x1 + w
-            y2 = y1 + h
-
-            if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
-                inputImage = self.imageInfoList[self.currentIndex]['origin'].copy(x1, y1, w, h)
-                inputImage = inputImage.scaled(96, 96)
-                img = inputImage.toImage()
-                img = img.convertToFormat(QImage.Format_Grayscale8)
-                width = img.width()
-                height = img.height()
-
-                ptr = img.bits()
-                ptr.setsize(img.byteCount())
-                arr = np.array(ptr).reshape(height, width, 1)
-                model.predictImage(arr)
-                break
-
 
 app = QApplication(sys.argv)
 window = ImageView()
