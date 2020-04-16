@@ -31,7 +31,6 @@ class ImageLabel(QLabel):
             y2 = y1 + h
 
             if x1 <= posx and posx <= x2 and y1 <= posy and posy <= y2:
-                print('in')
                 inputImage = self.currentImageInfo['origin'].copy(x1, y1, w, h)
                 inputImage = inputImage.scaled(96, 96)
                 img = inputImage.toImage()
@@ -130,6 +129,7 @@ class ImageView(QMainWindow):
         height = img.height()
 
         ptr = img.bits()
+
         ptr.setsize(img.byteCount())
         arr = np.array(ptr).reshape(height, width, 4)
         faceRect = face_cascade.detectMultiScale(arr, scaleFactor=1.1, minNeighbors=5)
