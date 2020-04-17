@@ -38,7 +38,7 @@ class Classifier:
         else:
             predict_label = 'yeri'
 
-        print('predict: ', predict_label)
+        return predict_label
 
 """
 #input_path = sys.argv[1]

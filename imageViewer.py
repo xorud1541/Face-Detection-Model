@@ -41,7 +41,10 @@ class ImageLabel(QLabel):
                 ptr = img.bits()
                 ptr.setsize(img.byteCount())
                 arr = np.array(ptr).reshape(height, width, 1)
-                model.predictImage(arr)
+                predict = model.predictImage(arr)
+
+                info = f'This is {predict}'
+                QMessageBox.information(self, 'Predict', info)
                 break
 
 class ImageView(QMainWindow):
