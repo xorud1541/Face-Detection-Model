@@ -47,6 +47,7 @@ class ImageLabel(QLabel):
                 result = QMessageBox.question(self, 'Machine Predict', message, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                 if result == QMessageBox.No:
                     """ 재학습을 위한 새로운 레이블 얻기 """
+                    model.retrainModel(arr, label='seulgi')
                 break
 
 class ImageView(QMainWindow):

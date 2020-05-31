@@ -4,21 +4,27 @@ import numpy as np
 import sys
 import os
 from tensorflow.keras import datasets, layers, models
+import IPython.display as display
 
 def decode_img(img):
     img = tf.image.decode_jpeg(img, channels=1)
     img = tf.image.convert_image_dtype(img, tf.float32)
     return img
 
+def function(image, label):
+    print(image.shape)
+    print(label.shape)
+    return image, label
+
 class Classifier:
     modelPath = ''
-    saved_model = 0
+    saved_model = None
     def __init__(self):
-        self.modelPath = './Model/dataset/model' #학습된 모델 경로
+        self.modelPath = './Model/dataset/model/MyModel.h5' #학습된 모델 경로
 
     def loadModel(self):
         print('model has loaded...')
-        self.saved_model = tf.keras.models.load_model(self.modelPath)
+        self.saved_model = tf.keras.models.load_model(self.modelPath, compile=True)
 
     def predictImage(self, array):
         image = tf.convert_to_tensor(array / 255)
@@ -39,6 +45,30 @@ class Classifier:
             predict_label = 'yeri'
 
         return predict_label
+
+    def retrainModel(self, imageArray, label):
+        CLASS_NAMES = np.array(['irene', 'joy', 'seulgi', 'wendy', 'yeri'])
+        imageArray = imageArray / 255.0
+        imageLabel = np.array(label == CLASS_NAMES)
+
+        imageArray = tf.convert_to_tensor(imageArray)
+        imageLabel = tf.convert_to_tensor(imageLabel)
+
+        imageArray = tf.expand_dims(imageArray, 0)
+        images = tf.tile(imageArray, [500, 1, 1, 1])
+
+        imageLabel = tf.expand_dims(imageLabel, 0)
+        labels = tf.tile(imageLabel, [500, 1])
+
+        train_ds = tf.data.Dataset.from_tensor_slices((images, labels))
+        train_ds = train_ds.map(function)
+        train_ds = train_ds.repeat()
+        train_ds = train_ds.batch(10)
+
+        self.saved_model.fit(train_ds, epochs=10, steps_per_epoch=50)
+
+        print('finish')
+
 
 """
 #input_path = sys.argv[1]
