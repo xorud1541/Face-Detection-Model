@@ -43,8 +43,10 @@ class ImageLabel(QLabel):
                 arr = np.array(ptr).reshape(height, width, 1)
                 predict = model.predictImage(arr)
 
-                info = f'This is {predict}'
-                QMessageBox.information(self, 'Predict', info)
+                message = f'This is {predict} ?'
+                result = QMessageBox.question(self, 'Machine Predict', message, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+                if result == QMessageBox.No:
+                    """ 재학습을 위한 새로운 레이블 얻기 """
                 break
 
 class ImageView(QMainWindow):
