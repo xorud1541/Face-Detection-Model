@@ -1,8 +1,17 @@
 # Face-Detection-Model
 
-## Todo
-- 마우스 위치 좌표계랑 사진 좌표계랑 일치하지 않은 점
-- 모델 재학습
+## 정리해야 할 내용들(블로그에 기록)
+- 학습모델 저장포맷 유형별 정리
+- 모델 구조 설명
+- Tensorflow 2.0의 dataset 사용법
+- 학습모델의 compile이란?
+- numpy와 tensor의 차이
+- numpy 학습
+
+## Todo(~ v2.0)
+- 모델의 예측이 틀렸을 때, 새로 레이블링 해줄 위젯(라디오버튼) 추가
+- 재학습 고도화
+- 이미지 뷰어 UI개선
 
 ## Google-images-Crawler 사용법
 - 실행인자
@@ -103,7 +112,3 @@ tf.data.datast API는 효율적으로 입력 파이프라인을 지원한다. �
 	- tf.data.dataset.repeat
 	- tf.data.dataset.batch
 	- tf.data.dataset.prefetch
-
-### 사용한 딥러닝 개념정리
-### 딥러닝 모델 설명
-### Tensorflow Model And C++
