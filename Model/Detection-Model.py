@@ -22,9 +22,9 @@ data_dir = pathlib.Path(data_dir)
 test_dir = pathlib.Path(test_dir)
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
-BATCH_SIZE = 10
+BATCH_SIZE = 130
 TEST_COUT = 130
-TRAIN_COUT = 500
+TRAIN_COUT = 1496
 CLASS_NAMES = np.array([item.name for item in data_dir.glob("*")])
 
 def get_label(file_path):
@@ -40,6 +40,16 @@ def process_path(file_path):
     label = get_label(file_path)
     img = tf.io.read_file(file_path)
     img = decode_img(img)
+    return img, label
+
+def process_path_flip(file_path):
+    origin, label = process_path(file_path)
+    img = tf.image.flip_left_right(origin)
+    return img, label
+
+def process_path_bright(file_path):
+    origin, label = process_path(file_path)
+    img = tf.image.adjust_brightness(origin, 0.3)
     return img, label
 
 def prepare_for_training(ds, cache=True, shuffle_buffer_size=5):
@@ -70,7 +80,11 @@ train_list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'))
 test_list_ds = tf.data.Dataset.list_files(str(test_dir/'*/*'))
 
 labeled_ds = train_list_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-train_ds = prepare_for_training(labeled_ds)
+labeled_ds_flip = train_list_ds.map(process_path_flip, num_parallel_calls=AUTOTUNE)
+labeled_ds_bright = train_list_ds.map(process_path_bright, num_parallel_calls=AUTOTUNE)
+concat_ds = labeled_ds.concatenate(labeled_ds_flip)
+final_ds = concat_ds.concatenate(labeled_ds_bright)
+train_ds = prepare_for_training(final_ds)
 
 labeled_test_ds = test_list_ds.map(process_path, num_parallel_calls=AUTOTUNE)
 test_ds = prepare_for_training(labeled_test_ds)
@@ -97,7 +111,7 @@ model.compile(optimizer=tf.optimizers.Adam(),
 
 steps_per_epoch = TRAIN_COUT / BATCH_SIZE
 steps_per_validation = TEST_COUT / BATCH_SIZE
-model.fit(train_ds, epochs=30, steps_per_epoch=steps_per_epoch, validation_data=test_ds, validation_steps=steps_per_validation)
+model.fit(train_ds, epochs=30, steps_per_epoch=steps_per_epoch, validation_data=test_ds, validation_steps=steps_per_validation, callbacks=[tensorboard_callback])
 
 path_save = './dataset/model/MyModel.h5'
 model.save(path_save)
