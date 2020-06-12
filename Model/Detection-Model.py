@@ -5,6 +5,7 @@ import pathlib
 import os
 import glob
 import matplotlib.pyplot as plt
+import datetime
 from PIL import Image
 from glob import glob
 from tensorflow.keras import datasets, layers, models
@@ -13,6 +14,8 @@ from tensorflow.keras.layers import Flatten
 root_dir = 'dataset'
 data_dir = 'dataset/train'
 test_dir = 'dataset/test'
+log_dir = os.path.abspath('dataset/model/') + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 root_dir = pathlib.Path(root_dir)
 data_dir = pathlib.Path(data_dir)
